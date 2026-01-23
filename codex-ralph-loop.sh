@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Claude Ralph Loop - Wrapper
+# Codex Ralph Loop - Wrapper
 #
 
 set -e
@@ -18,7 +18,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$SOURCE_PATH")" && pwd)"
 CORE_PATH="$SCRIPT_DIR/ralph-loop-core.sh"
 
-export PROVIDER="claude"
+export PROVIDER="codex"
 
 if [[ ! -f "$CORE_PATH" ]]; then
     echo "Error: ralph-loop-core.sh not found in $SCRIPT_DIR" >&2

@@ -3,7 +3,7 @@
 # BMAD Ralph Loop - Installation Script
 # =======================================
 #
-# This script installs claude-ralph-loop to your system.
+# This script installs Ralph Loop scripts to your system.
 #
 
 set -e
@@ -18,8 +18,11 @@ NC='\033[0m'
 
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_NAME="claude-ralph-loop.sh"
-BINARY_NAME="claude-ralph-loop"
+CORE_SCRIPT="ralph-loop-core.sh"
+CLAUDE_SCRIPT="claude-ralph-loop.sh"
+CODEX_SCRIPT="codex-ralph-loop.sh"
+CLAUDE_BINARY="claude-ralph-loop"
+CODEX_BINARY="codex-ralph-loop"
 
 echo ""
 echo -e "${CYAN}================================${NC}"
@@ -33,11 +36,26 @@ echo -e "${BLUE}[i]${NC} Checking dependencies..."
 missing_deps=()
 
 # Check Claude Code CLI
+has_claude=false
 if command -v claude &> /dev/null; then
+    has_claude=true
     echo -e "${GREEN}[+]${NC} Claude Code CLI found: $(claude --version 2>/dev/null || echo 'installed')"
 else
-    missing_deps+=("claude")
-    echo -e "${RED}[x]${NC} Claude Code CLI not found"
+    echo -e "${YELLOW}[!]${NC} Claude Code CLI not found"
+fi
+
+# Check OpenAI Codex CLI
+has_codex=false
+if command -v codex &> /dev/null; then
+    has_codex=true
+    echo -e "${GREEN}[+]${NC} OpenAI Codex CLI found"
+else
+    echo -e "${YELLOW}[!]${NC} OpenAI Codex CLI not found"
+fi
+
+# Require at least one provider
+if [[ "$has_claude" == "false" && "$has_codex" == "false" ]]; then
+    missing_deps+=("claude-or-codex")
 fi
 
 # Check yq
@@ -72,8 +90,10 @@ if [[ ${#missing_deps[@]} -gt 0 ]]; then
 
     for dep in "${missing_deps[@]}"; do
         case "$dep" in
-            claude)
-                echo "Install Claude Code CLI from: https://claude.ai"
+            claude-or-codex)
+                echo "Install a supported agent CLI:"
+                echo "  - Claude Code CLI: https://claude.ai"
+                echo "  - OpenAI Codex CLI: https://developers.openai.com/codex/cli"
                 echo ""
                 ;;
             yq)
@@ -100,11 +120,11 @@ if [[ ${#missing_deps[@]} -gt 0 ]]; then
         esac
     done
 
-    # Check if claude is still missing
-    if [[ " ${missing_deps[*]} " =~ " claude " ]]; then
+    # Check if no provider is available
+    if [[ " ${missing_deps[*]} " =~ " claude-or-codex " ]]; then
         echo ""
-        echo -e "${RED}[x]${NC} Cannot continue without Claude Code CLI"
-        echo "    Please install it first from: https://claude.ai"
+        echo -e "${RED}[x]${NC} Cannot continue without an agent CLI"
+        echo "    Install Claude Code CLI or OpenAI Codex CLI first"
         exit 1
     fi
 fi
@@ -147,14 +167,18 @@ fi
 
 # Install script
 echo ""
-echo -e "${BLUE}[i]${NC} Installing to: $INSTALL_DIR/$BINARY_NAME"
+echo -e "${BLUE}[i]${NC} Installing to: $INSTALL_DIR"
 
 if [[ "$NEED_SUDO" == "true" ]]; then
-    sudo cp "$SCRIPT_DIR/$SCRIPT_NAME" "$INSTALL_DIR/$BINARY_NAME"
-    sudo chmod +x "$INSTALL_DIR/$BINARY_NAME"
+    sudo cp "$SCRIPT_DIR/$CORE_SCRIPT" "$INSTALL_DIR/$CORE_SCRIPT"
+    sudo cp "$SCRIPT_DIR/$CLAUDE_SCRIPT" "$INSTALL_DIR/$CLAUDE_BINARY"
+    sudo cp "$SCRIPT_DIR/$CODEX_SCRIPT" "$INSTALL_DIR/$CODEX_BINARY"
+    sudo chmod +x "$INSTALL_DIR/$CLAUDE_BINARY" "$INSTALL_DIR/$CODEX_BINARY"
 else
-    cp "$SCRIPT_DIR/$SCRIPT_NAME" "$INSTALL_DIR/$BINARY_NAME"
-    chmod +x "$INSTALL_DIR/$BINARY_NAME"
+    cp "$SCRIPT_DIR/$CORE_SCRIPT" "$INSTALL_DIR/$CORE_SCRIPT"
+    cp "$SCRIPT_DIR/$CLAUDE_SCRIPT" "$INSTALL_DIR/$CLAUDE_BINARY"
+    cp "$SCRIPT_DIR/$CODEX_SCRIPT" "$INSTALL_DIR/$CODEX_BINARY"
+    chmod +x "$INSTALL_DIR/$CLAUDE_BINARY" "$INSTALL_DIR/$CODEX_BINARY"
 fi
 
 echo -e "${GREEN}[+]${NC} Installed successfully!"
@@ -173,12 +197,21 @@ fi
 
 # Verify installation
 echo ""
-if command -v $BINARY_NAME &> /dev/null; then
-    echo -e "${GREEN}[+]${NC} Installation verified!"
-    echo ""
-    echo "Run 'claude-ralph-loop --help' to get started"
+verified_any=false
+if command -v "$CLAUDE_BINARY" &> /dev/null; then
+    verified_any=true
+    echo -e "${GREEN}[+]${NC} $CLAUDE_BINARY installed!"
+fi
+if command -v "$CODEX_BINARY" &> /dev/null; then
+    verified_any=true
+    echo -e "${GREEN}[+]${NC} $CODEX_BINARY installed!"
+fi
+
+echo ""
+if [[ "$verified_any" == "true" ]]; then
+    echo "Run 'claude-ralph-loop --help' or 'codex-ralph-loop --help' to get started"
 else
-    echo -e "${YELLOW}[!]${NC} Installation complete, but command not found in PATH yet"
+    echo -e "${YELLOW}[!]${NC} Installation complete, but commands not found in PATH yet"
     echo ""
     echo "After updating your PATH, run: claude-ralph-loop --help"
 fi
