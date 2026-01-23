@@ -26,6 +26,8 @@ BMAD Ralph Loop orchestrates three main workflows in sequence:
 
 Each workflow is executed by a specific agent and moves the story through defined states.
 
+Examples use `claude-ralph-loop`. If you're running Codex, replace it with `codex-ralph-loop`.
+
 ---
 
 ## State Machine
@@ -230,10 +232,10 @@ development_status:
 
 ### Custom Workflow Prompts
 
-The workflow prompts are defined in `run_claude_workflow()`. Modify for custom behavior:
+The workflow prompts are defined in `run_agent_workflow()` in `ralph-loop-core.sh`. Modify for custom behavior:
 
 ```bash
-run_claude_workflow() {
+run_agent_workflow() {
     local agent="$1"
     local workflow="$2"
     local description="$3"
@@ -255,7 +257,7 @@ CRITICAL: Run in fully autonomous mode. Do NOT ask questions.
 
 ```
 ┌──────────┐          ┌────────────┐          ┌───────────────┐
-│  Ralph   │          │   Claude   │          │  File System  │
+│  Ralph   │          │ Agent CLI  │          │  File System  │
 │  Loop    │          │   Code     │          │               │
 └────┬─────┘          └─────┬──────┘          └───────┬───────┘
      │                      │                         │

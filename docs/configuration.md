@@ -98,6 +98,12 @@ retrospectives:
 | `RALPH_PROJECT_ROOT` | Current directory | Project root path |
 | `RALPH_SPRINT_STATUS` | `_bmad-output/implementation-artifacts/sprint-status.yaml` | Sprint status file path |
 | `RALPH_LOG_DIR` | `logs/` | Directory for log files |
+| `RALPH_CODEX_FULL_AUTO` | `true` | Use `--full-auto` with Codex exec |
+| `RALPH_CODEX_SANDBOX` | *(empty)* | Codex sandbox mode (e.g., `danger-full-access`) |
+| `RALPH_CODEX_MODEL` | *(empty)* | Codex model override |
+| `RALPH_CODEX_SEARCH` | `false` | Enable `codex --search` |
+
+Codex-specific options apply when running `codex-ralph-loop`.
 
 ### Setting Environment Variables
 
@@ -122,6 +128,7 @@ Create a `.env` file in your project root:
 RALPH_PROJECT_ROOT=/path/to/project
 RALPH_SPRINT_STATUS=config/sprint-status.yaml
 RALPH_LOG_DIR=.logs
+RALPH_CODEX_SANDBOX=danger-full-access
 ```
 
 Load it before running:
@@ -163,7 +170,7 @@ your-project/
 └── ...
 ```
 
-Story and epic files will be created by Claude during workflow execution.
+Story and epic files will be created by the selected agent during workflow execution.
 
 ---
 
@@ -201,7 +208,7 @@ BMAD Ralph Loop uses BMAD agents (`SM` and `DEV`). These agents are loaded throu
 
 To use custom agents:
 1. Define your agents in your project's BMAD configuration
-2. Modify the `run_claude_workflow()` calls in the script
+2. Modify the `run_agent_workflow()` calls in `ralph-loop-core.sh`
 
 ---
 
@@ -250,8 +257,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Claude Code CLI
-        run: echo "Install Claude Code CLI from claude.ai"
+      - name: Setup Agent CLI
+        run: echo "Install Claude Code CLI or OpenAI Codex CLI"
 
       - name: Setup yq
         run: sudo snap install yq
@@ -260,10 +267,13 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          LOOP_CMD="./claude-ralph-loop.sh"
+          # For Codex, use:
+          # LOOP_CMD="./codex-ralph-loop.sh"
           if [ -n "${{ inputs.epic }}" ]; then
-            ./claude-ralph-loop.sh --epic ${{ inputs.epic }}
+            $LOOP_CMD --epic ${{ inputs.epic }}
           else
-            ./claude-ralph-loop.sh
+            $LOOP_CMD
           fi
 ```
 
