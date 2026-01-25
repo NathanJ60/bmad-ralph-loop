@@ -29,7 +29,7 @@ When creating a bug report, include:
 2. **Environment details**
    - OS and version
    - Bash version (`bash --version`)
-   - Claude Code CLI version (`claude --version`)
+   - Claude Code CLI version (`claude --version`) or OpenAI Codex CLI version (from `codex` output)
    - yq version (`yq --version`)
 3. **Steps to reproduce** - List the exact steps
 4. **Expected behavior** - What should happen
@@ -103,15 +103,17 @@ Feature requests are welcome! Please include:
    cd claude-ralph-loop
    ```
 
-2. Make the script executable:
+2. Make the scripts executable:
    ```bash
-   chmod +x claude-ralph-loop.sh
+   chmod +x ralph-loop-core.sh claude-ralph-loop.sh codex-ralph-loop.sh
    ```
 
 3. Test locally:
    ```bash
    ./claude-ralph-loop.sh --help
    ./claude-ralph-loop.sh --dry-run
+   # or, using Codex
+   ./codex-ralph-loop.sh --help
    ```
 
 4. Run shellcheck for linting:
@@ -122,7 +124,7 @@ Feature requests are welcome! Please include:
    apt install shellcheck   # Linux
 
    # Run checks
-   shellcheck claude-ralph-loop.sh
+   shellcheck ralph-loop-core.sh claude-ralph-loop.sh codex-ralph-loop.sh
    ```
 
 ## Style Guidelines
@@ -164,7 +166,7 @@ myFunction() {
 All code must pass shellcheck without warnings:
 
 ```bash
-shellcheck claude-ralph-loop.sh
+shellcheck ralph-loop-core.sh claude-ralph-loop.sh codex-ralph-loop.sh
 ```
 
 If you need to disable a specific check, document why:

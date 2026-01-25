@@ -2,7 +2,7 @@
 # Sprint Status - Example File
 # =============================================================================
 # This file tracks the development status of all stories in the current sprint.
-# Claude Ralph Loop uses this file to determine which stories to process.
+# Ralph Loop uses this file to determine which stories to process.
 #
 # Copy this file to your project:
 #   _bmad-output/implementation-artifacts/sprint-status.yaml

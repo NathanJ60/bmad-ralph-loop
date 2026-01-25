@@ -5,9 +5,9 @@
 [![Claude Code](https://img.shields.io/badge/For-Claude%20Code-blueviolet)](https://claude.ai)
 [![BMAD Method](https://img.shields.io/badge/BMAD-Method-orange)](https://github.com/bmad-method)
 
-> **Automate your BMAD development workflow with Claude Code CLI**
+> **Automate your BMAD development workflow with Claude Code CLI or OpenAI Codex CLI**
 
-BMAD Ralph Loop is a CLI automation tool that orchestrates development cycles using Claude Code CLI and the BMAD Method agents. It manages the complete story lifecycle: from story creation by the Scrum Master agent, through implementation by the Developer agent, to code review — all running autonomously.
+BMAD Ralph Loop is a CLI automation tool that orchestrates development cycles using Claude Code CLI or OpenAI Codex CLI and the BMAD Method agents. It manages the complete story lifecycle: from story creation by the Scrum Master agent, through implementation by the Developer agent, to code review — all running autonomously.
 
 ![Demo](docs/assets/demo.gif)
 *Demo placeholder - Record your own workflow!*
@@ -42,6 +42,8 @@ cd claude-ralph-loop
 # 3. Run in your project
 cd /path/to/your/project
 claude-ralph-loop
+# or, using Codex
+codex-ralph-loop
 ```
 
 ---
@@ -51,8 +53,11 @@ claude-ralph-loop
 ### Prerequisites
 
 - **Claude Code CLI** — [Install from claude.ai](https://claude.ai)
+- **OpenAI Codex CLI** — [Install from OpenAI docs](https://developers.openai.com/codex/cli)
 - **yq** — YAML processor
 - **Bash 4+** — Modern bash shell
+
+Install at least one provider CLI (Claude or Codex).
 
 ### Via Install Script (Recommended)
 
@@ -69,12 +74,16 @@ cd claude-ralph-loop
 git clone https://github.com/NathanJ60/bmad-ralph-loop.git
 
 # Make executable
-chmod +x claude-ralph-loop/claude-ralph-loop.sh
+chmod +x claude-ralph-loop/claude-ralph-loop.sh claude-ralph-loop/codex-ralph-loop.sh
 
-# Add to PATH (choose one)
-sudo ln -s $(pwd)/claude-ralph-loop/claude-ralph-loop.sh /usr/local/bin/claude-ralph-loop
-# OR
+# Add to PATH (choose one). Keep the core and wrappers together.
+sudo cp claude-ralph-loop/ralph-loop-core.sh /usr/local/bin/ralph-loop-core.sh
+sudo cp claude-ralph-loop/claude-ralph-loop.sh /usr/local/bin/claude-ralph-loop
+sudo cp claude-ralph-loop/codex-ralph-loop.sh /usr/local/bin/codex-ralph-loop
+# OR (user-only)
+cp claude-ralph-loop/ralph-loop-core.sh ~/bin/ralph-loop-core.sh
 cp claude-ralph-loop/claude-ralph-loop.sh ~/bin/claude-ralph-loop
+cp claude-ralph-loop/codex-ralph-loop.sh ~/bin/codex-ralph-loop
 ```
 
 ### Install Dependencies
@@ -96,6 +105,8 @@ sudo snap install yq
 
 ```bash
 claude-ralph-loop [OPTIONS]
+# or
+codex-ralph-loop [OPTIONS]
 ```
 
 ### Options
@@ -106,7 +117,7 @@ claude-ralph-loop [OPTIONS]
 | `--epic N` | Process only stories from epic N |
 | `--story X-Y` | Process a specific story (e.g., `1-2`) |
 | `--skip-review` | Skip the code-review step |
-| `--verbose` | Show detailed Claude output |
+| `--verbose` | Show detailed agent output |
 | `--help` | Display help message |
 
 ### Examples
@@ -129,7 +140,14 @@ claude-ralph-loop --skip-review
 
 # Debug mode: see all output
 claude-ralph-loop --verbose
+
+# Use Codex instead of Claude
+codex-ralph-loop
 ```
+
+### Choose Your CLI
+
+Use `claude-ralph-loop` for Claude Code CLI or `codex-ralph-loop` for OpenAI Codex CLI.
 
 ---
 
@@ -277,6 +295,7 @@ The tool expects BMAD-style artifacts:
 | Requirement | Version | Notes |
 |-------------|---------|-------|
 | Claude Code CLI | Latest | Install from [claude.ai](https://claude.ai) |
+| OpenAI Codex CLI | Latest | Install from [OpenAI docs](https://developers.openai.com/codex/cli) |
 | yq | 4.x+ | YAML processor |
 | Bash | 4.0+ | Modern bash features |
 | Git | 2.x+ | For auto-commit feature |
@@ -284,8 +303,9 @@ The tool expects BMAD-style artifacts:
 ### Check Your Setup
 
 ```bash
-# Verify all dependencies
-claude --version
+# Verify all dependencies (use the provider you selected)
+claude --version  # Claude Code CLI
+codex             # OpenAI Codex CLI (if using codex-ralph-loop)
 yq --version
 bash --version
 git --version
@@ -298,6 +318,10 @@ git --version
 ### "Claude Code CLI not found"
 
 Install Claude Code CLI from [claude.ai](https://claude.ai)
+
+### "Codex CLI not found"
+
+Install OpenAI Codex CLI from [OpenAI docs](https://developers.openai.com/codex/cli)
 
 ### "yq not found"
 
@@ -317,7 +341,7 @@ Run sprint planning first or create the file manually. See [examples/sprint-stat
 
 The SM agent failed to create the story. Check:
 1. Epic definitions exist in `_bmad-output/planning-artifacts/`
-2. Claude Code CLI has necessary permissions
+2. Agent CLI has necessary permissions
 3. Run with `--verbose` for detailed output
 
 ---
@@ -357,4 +381,3 @@ If you find this useful, please star the repo!
 ```
          ⭐ Star this repo to support the project! ⭐
 ```
-
