@@ -168,7 +168,7 @@ usage() {
         echo "  RALPH_CODEX_SEARCH    Enable codex --search (default: false)"
     fi
     echo ""
-    echo "Documentation: https://github.com/YOUR_USERNAME/claude-ralph-loop"
+    echo "Documentation: https://github.com/NathanJ60/bmad-ralph-loop"
     echo ""
 }
 
